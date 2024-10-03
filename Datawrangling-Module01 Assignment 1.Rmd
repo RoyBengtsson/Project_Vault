@@ -1,0 +1,447 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+##Roy Bengtsson Hangård
+##Title:Datawrangling, module01
+##Created:2024-09-30
+##Last modified: 2024-10-03
+
+* Loading the tidyverse package.
+
+* Loading the dataset intoa dataframe
+
+* Looking at the column specifications.
+
+* Looking at the dataframe.
+```{r}
+library(tidyverse)
+df_mothcount <- read_csv("MothCount.csv")
+spec(df_mothcount)
+df_mothcount
+```
+* Renaming the 3 variable names
+* Creating a new dataframe
+* Combining 2 columns into 2 new columns
+* Col(morph) shows the observations morphology
+* Col(count) sum up every individual for every sex-morph combination
+* Looking at the new dataframe
+```{r}
+df_mothcount <- rename(df_mothcount,
+                       sex = ...1,
+                       dark = `Dark morph`,
+                       light = `Light morph`)
+df_mothcount_tidy <- pivot_longer(data = df_mothcount, 
+                                  cols = dark:light,
+                                  names_to = 'morph',
+                                  values_to = 'count')
+df_mothcount_tidy
+```
+* Loading a dataset into a dataframe
+* Looking at dataframe and col.specifications
+* Printing the entire dataframe
+* Renaming col.(1) to 'ID'
+* Combining the cols(pre.1:pre.5)
+* Creating cols(period, measurements) from (pre.1:pre.5)
+```{r}
+df_OBK <- read_csv('OBrienKaiser.csv')
+df_OBK
+spec(df_OBK)
+print.data.frame(df_OBK)
+
+df_OBK %>% 
+  rename(ID = ...1) %>%
+  pivot_longer(cols = pre.1:fup.5, 
+               names_to = "period",
+               values_to = "measurements")
+```
+* Renaming col.(1) to 'ID'
+* Combining the cols(pre.1:pre.5)
+* Creating cols(period, measurements) from (pre.1:pre.5)
+* Printing the entire dataframe
+```{r}
+df_OBK %>%
+  rename(ID = ...1) %>%
+  pivot_longer(cols = pre.1:fup.5,
+               names_to = "period",
+               values_to = "measurements") %>%
+  print.data.frame(.) 
+```
+* Renaming col.(1) to 'ID'
+* Combining the cols(pre.1:pre.5)
+* Creating cols(period, measurements) from (pre.1:pre.5)
+* Including only the last 10 observations
+```{r}
+df_OBK %>%
+  rename(ID = ...1) %>%
+  pivot_longer(cols = pre.1:fup.5,
+               names_to = "period",
+               values_to = "measurements") %>%
+  tail(., n=10)
+```
+* Renaming col.(1) to 'ID'
+* Combining the cols(pre.1:pre.5)
+* Creating cols(period, measurements) from (pre.1:pre.5)
+* Seperating col(period)
+* Creating cols(period, time)
+```{r}
+df_OBK %>%
+  rename(ID = ...1) %>%
+  pivot_longer(cols = pre.1:fup.5,
+               names_to = "period",
+               values_to = "measurements") %>%
+  separate(col = period,
+           into = c("period", "time"),
+           sep = "\\.")
+```
+* Renaming col.(1) to 'ID'
+* Combining the cols(pre.1:pre.5)
+* Creating cols(period, measurements) from (pre.1:pre.5)
+* Seperating col(period)
+* Creating cols(period, time)
+* Converting col(time) character type to numeric type
+```{r}
+df_OBK %>%
+  rename(ID = ...1) %>%
+  pivot_longer(cols = pre.1:fup.5,
+               names_to = "period",
+               values_to = "measurements") %>%
+  separate(col = period,
+           into = c("period", "time")) %>%
+  mutate(time = as.numeric(time))
+```
+* Creating a datframe
+* Renaming col.(1) to 'ID'
+* Combining the cols(pre.1:pre.5)
+* Creating cols(period, measurements) from (pre.1:pre.5)
+* Seperating col(period)
+* Creating cols(period, time)
+* Converting col(time) character type to numeric type
+```{r}
+df_OBK_tidy <- df_OBK %>%
+  rename(ID = ...1) %>%
+  pivot_longer(cols = pre.1:fup.5,
+               names_to = "period",
+               values_to = "measurements") %>%
+  separate(col = period,
+           into = c("period", "time")) %>%
+  mutate(time = as.numeric(time))
+```
+* Loading a dataset to a dataframe
+* Looking at col.specification
+* Looking at dataframe
+```{r}
+tom_cities_df <- read_csv('Tom_cities_long.csv')
+spec(tom_cities_df)
+tom_cities_df
+```
+* Loading a dataset to a dataframe
+* Looking at col.specification
+* Looking at dataframe
+```{r}
+TOM_CITIES_Scotland_df2 <- read_csv('TOM_CITIES.csv')
+spec(TOM_CITIES_Scotland_df)
+TOM_CITIES_Scotland_df2
+```
+* Creating a dataframe
+* Combining 10 columns
+* Creating 2 new columns
+```{r}
+TOM_CITIES_Scotland_df3 <- TOM_CITIES_Scotland_df2%>%
+  pivot_longer(cols = 'Day 1':'Day 10',
+               names_to = "DAY",
+               values_to = "Temperature")
+```
+* Creating a dataframe
+* Combining 10 columns
+* Creating 2 new columns
+* Looking at dataframe
+* Converting col(Day)character type to numeric type
+* Dropping col(redundant) from the new dataframe
+```{r}
+NEW_CITIES_Scotland_df4 <-  TOM_CITIES_Scotland_df3%>% separate(col = DAY, into = c("redundant", "Day"))
+NEW_CITIES_Scotland_df4
+NEW_CITIES_Scotland_df4 %>% mutate(Day = as.numeric(Day))
+
+NEW_CITIES_Scotland_df4 %>% select(-redundant) %>% 
+  mutate(Day = as.numeric(Day))
+```
+* Creating a new dataframe
+* Dropping col(redundant) from the new dataframe
+* Creating a new dataframe
+* Converting col(Day)character type to numeric type
+* Looking at the dataframe
+```{r}
+TEMPS_CITIES_df <- NEW_CITIES_Scotland_df %>% 
+  select(-redundant)
+Cities_temps_df <- TEMPS_CITIES_df %>% 
+  mutate(Day = as.numeric(Day))
+Cities_temps_df
+```
+* Arranging variables in col(Temperature) in a descending order 2 times
+* Kepping the dataframe's columns
+```{r}
+Cities_temps_df %>%
+  arrange(desc(Temperature))
+
+Cities_temps_df %>%
+  arrange(desc(Temperature)) %>%
+  distinct(City, .keep_all = TRUE)
+```
+* Filtering out 'Tuscaloosa from col(City)
+* Arranging variables in col(Temperature) in a descending order
+```{r}
+Cities_temps_df %>%
+  filter(City != "Tuscaloosa") %>%
+  arrange(desc(Temperature))
+```
+* Filtering out 'Tuscaloosa from col(City)
+* Arranging variables in col(Temperature) in an ascending order
+```{r}
+Cities_temps_df %>%
+  filter(City != "Tuscaloosa") %>%
+  arrange(Temperature)
+```
+* Filtering col(City) for 3 cities
+* Arranging variables in col(Temperature) in an ascending order
+```{r}
+Cities_temps_df %>%
+  filter(City %in% c("Cambridge","Falmouth","London")) %>%
+  arrange(Temperature)
+```
+* Grouping the cities together under col(City)
+* Calculating the temperature mean for each city
+```{r}
+  Cities_temps_df %>%
+  group_by(City) %>%
+  summarise(Temp_mean = mean(Temperature))
+```
+* Grouping the cities together under col(City)
+* Calculating temperature mean and standard deviation from col(Temperature)
+```{r}
+Cities_temps_df %>%
+  group_by(City) %>%
+  summarise(Temp_mean = mean(Temperature),
+            Temp_sd = sd(Temperature))
+```
+* Grouping the cities together under col(City)
+* Calculating temperature mean and standard deviation from col(Temperature)
+* Including the number of observations
+* Calculating the standard error
+* Defining a formula for standard error
+```{r}
+Cities_temps_df %>%
+  group_by(City) %>%
+  summarise(Temp_mean = mean(Temperature),
+            Temp_sd = sd(Temperature),
+            Temp_n = n()) %>%
+  mutate(Temp_SE = Temp_sd/sqrt(Temp_n))
+std_err <- function(x) {
+  SE <- sd(x)/sqrt(length(x))
+  return(SE)
+}
+```
+* Grouping the cities together under col(City)
+* Calculating temperature mean and standard error from col(Temperature)
+```{r}
+Cities_temps_df %>%
+  group_by(City) %>%
+  summarise(Temp_mean = mean(Temperature),
+            Temp_SE = std_err(Temperature))
+```
+* Grouping the cities together under col(City)
+* Calculating temperature mean and standard error from col(Temperature)
+*Rounding the standard error to 3 digits
+```{r}
+Cities_temps_df %>%
+  group_by(City) %>%
+  summarise(Temp_mean = mean(Temperature),
+            Temp_SE = round(std_err(Temperature), digits = 3))
+```
+* Grouping the cities together under col(City)
+* Calculating temperature maximum and minimum values in each city
+```{r}
+Cities_temps_df %>%
+  group_by(City) %>%
+  summarise(Temp_min = min(Temperature),
+            Temp_max = max(Temperature))
+```
+* Loading datasets to dataframes
+* Craeting a new dataframe from 2 dataframes
+* Joining the dataframes and kepping observations from df_moth_mass
+* Looking at the dataset
+* Grouping the Morph and SEX values together
+* Calculating the mean of col(MASS)
+```{r}
+df_moth_mass <- read_csv("MOTH_MASS.csv")
+df_moth_morph <- read_csv("MOTH_MORPHS.csv")
+
+df_moth_joined <- left_join(df_moth_mass,
+                            df_moth_morph)
+df_moth_joined
+df_moth_joined %>%
+  group_by(SEX, MORPH) %>%
+  summarise(Moth_mass_mean = mean(MASS))
+```
+* Loading a dataset to a dataframe
+* Looking at the dataset
+* Creating a dataframe
+* Filtering out value 2014 from col(Year)
+```{r}
+df_weather <- read_csv("UKWeatherData.csv")
+
+df_weather
+
+df_weather
+df_weather_new <- df_weather %>%
+  filter(Year <= 2014)
+```
+* Creating a dataframe
+* Arranging cols(Year, Month) in a descending order
+* Looking at the new dataframe
+* Keeping only col(Location)
+```{r}
+df_new_weather <- df_weather_new %>%
+  arrange(desc(Year)) %>% 
+  arrange(desc(Month))
+df_new_weather
+
+df_new_weather %>% distinct(Location)
+```
+* Creating a dataframe
+* Keeping cols(Location, Year, Month, TempMax)
+* Filtering col(Location) for Paisley
+* Arranging col(TempMax) in a descending order
+```{r}
+Paisley_Max_Temp3 <- df_new_weather %>% 
+  select(Location, Year, Month, TempMax) %>% 
+  filter(Location == 'Paisley') %>% 
+  arrange(desc(TempMax))
+Paisley_Max_Temp3
+```
+* Creating a dataframe
+* Grouping the years under col(Year)
+* Calculating the mean of col(TempMax)
+* Arranging col(TempMax) in a descending order
+* Looking at the new dataframe
+```{r}
+Paisley_Max_Temp4 <- Paisley_Max_Temp3 %>%
+  group_by(Year) %>%
+  summarise(mean_TempMax = mean(TempMax)) %>% 
+  arrange(desc(mean_TempMax))
+
+Paisley_Max_Temp4
+```
+* Creating a dataframe
+* Grouping the years under cols(Location, Year)
+* Calculating the mean of col(TempMax)
+* Arranging col(TempMax) in a descending order
+* Looking at the new dataframe
+```{r}
+Paisley_Max_Temp6  <- df_new_weather %>%
+  group_by(Location, Year) %>%
+  summarise(mean_TempMax = mean(TempMax)) %>% 
+  arrange(desc(mean_TempMax))
+
+Paisley_Max_Temp6
+```
+* Creating a dataframe
+* Filtering dataframe for year == 1999
+* Grouping the months together under col(Month)
+* Filtering out eventual Na-values in col(Rainfall)
+* Calculating the mean and standard error of col(Rainfall)
+* Rounding the standard error to 2 digits
+* Looking at the dataframe
+```{r}
+RAINFALL_UK4  <- df_weather%>%
+  filter(Year == 1999) %>% 
+  group_by(Month) %>%
+  filter(!is.na(Rainfall)) %>% 
+  summarise(mean_rain = mean(Rainfall, na.rm = TRUE),
+  se_rain = round(std_err(Rainfall), digits = 2))
+RAINFALL_UK4
+```
+* Creating a dataframe
+* grouping the location and year values
+* Filtering out eventual Na-values in cols(TempMax,TempMin)
+* Calculating temperature range
+*Looking at dataframe
+```{r}
+Temprange_UK3  <- df_weather%>%
+  group_by(Location, Year) %>%
+  filter(!is.na(TempMax & TempMin)) %>% 
+  summarise(Temprange = TempMax - TempMin)
+
+Temprange_UK3 
+```
+* Creating a dataframe
+* Filtering col(Year) for 200-2010
+* Grouping the years un col(Year)
+* Calculating the temperature range for each year and location
+* Dropping eventual Na-values in col(Temprange)
+* Ungrouping the grouping
+* Looking at the dataframe
+```{r}
+HighTemp_UK2003 <- Temprange_UK3%>% 
+  filter(Year >= 2000 & Year <= 2010)  %>% 
+  group_by(Year) %>% 
+  filter(Temprange == max(Temprange, na.rm = TRUE)) %>% 
+  ungroup()
+HighTemp_UK2003
+```
+* Creating col(HalYear) which shows which half of the year the observations were made on
+```{r}
+df_weather %>%
+  mutate(HalfYear = ifelse(Month <= 6, "First", "Second"))
+```
+* Filtering col(Location) for value 'Stornoway'
+* Filtering col(Year) for year range 2001-2010
+* Creating col(HalfYear)
+* Grouping the values in cols(Location, Year, HalfYear)
+* Calculating the mean of monthly rainfall and dropping Na-values
+```{r}
+df_weather %>% 
+  filter(Location == 'Stornoway') %>% 
+  filter(Year >= 2001 & Year <= 2010) %>% 
+    mutate(HalfYear = ifelse(Month <= 6, 'First', 'Second')) %>% 
+    group_by(Location, Year, HalfYear) %>% 
+    summarise(mean_rainfall = mean(Rainfall, na.rm = TRUE))
+```
+* Creating col(Quarter)
+* Col(Quarter) shows on which quarter the observations were made
+```{r}
+df_weather %>%
+  mutate(Quarter = ifelse(Month <= 3,1,
+                          ifelse(Month <= 6,2,
+                                 ifelse(Month <= 9,3,4))))
+```
+* Loading a dataset to a dataframe
+* Looking at the dataset
+* Joining 2 dataframes with col(Location)
+* Keeping the obs. from df_weather
+```{r}
+df_stations <- read_csv("WeatherStations.csv")
+df_stations
+right_join(df_stations,df_weather,
+           by = "Location")
+```
+* Filtering col(Year) for value 2014
+* Selecting the cls(Location, Month, Rainfall)
+* Grouping the locations together
+* Calculating total rainfall 
+* Dropping eventual Na-values
+* Joining 2 dataframes
+* Arranging col(total_rain) in a descending order
+* Printing the entire dataframe
+```{r}
+df_weather %>%
+  filter(Year == 2014) %>%
+  select(Location, Month, Rainfall) %>%
+  group_by(Location) %>%
+  summarise(total_rain = sum(Rainfall, na.rm = TRUE)) %>%
+  left_join(., df_stations) %>%
+  arrange(desc(total_rain)) %>%
+  print.data.frame()
+```
+* Link to Git_Hub repository
+https://github.com/RoyBengtsson/Project_Vault.git 
